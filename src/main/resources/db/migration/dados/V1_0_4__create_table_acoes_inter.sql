@@ -6,7 +6,11 @@ create table lancamento_etf_inter (
     outros_custos numeric(10,8) not null,
     ativo_fiat character varying(10) not null default 'USD',
     id_usuario integer not null,
-    operacao character varying(10) not null
+    operacao character varying(10) not null,
+    origem character varying(10) not null,
+    preco_medio_antes_operacao numeric(10,8) not null
 );
+
+CREATE INDEX lancamento_etf_inter_usuario_idx ON lancamento_etf_inter ( id_usuario, time DESC);
 
 SELECT create_hypertable('lancamento_etf_inter', by_range('time', INTERVAL '30 days'));
