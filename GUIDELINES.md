@@ -7,11 +7,11 @@ Goods Investimentos is a Spring Boot application for managing various types of i
 - Java 21
 - Spring Boot 3.4.2
 - Spring Data JPA
-- TimescaleDB Database
+- TimescaleDB (PostgreSQL extension) for database
 - Flyway for database migrations
-- Spring Cloud with Resilience4j and OpenFeign
+- Spring Cloud with OpenFeign
 - Lombok for reducing boilerplate code
-- TestContainers for integration testing
+- Embedded PostgreSQL Database for integration testing
 
 ## Project Structure
 The project follows a standard layered architecture:
@@ -166,34 +166,44 @@ public interface LancamentoCriptoRepository extends JpaRepository<LancamentoCrip
 ```
 
 ## Testing
-- Use TestContainers for integration tests with a real PostgreSQL database
-- Create separate test configuration classes
+- Use Embedded PostgreSQL Database for integration tests
 - Use Spring Boot Test annotations
+- Use SQL scripts for test data setup
 - Follow the Arrange-Act-Assert pattern
 
 Example:
 ```java
-@TestConfiguration
-public class PostgreSQLTestContainer {
-    private static final String POSTGRES_IMAGE = "timescale/timescaledb-ha:pg17";
-    private static final PostgreSQLContainer<?> postgreSQLContainer;
+@SpringBootTest
+@EnableAutoConfiguration
+@AutoConfigureMockMvc
+@AutoConfigureEmbeddedDatabase(refresh = AutoConfigureEmbeddedDatabase.RefreshMode.AFTER_EACH_TEST_METHOD, type = AutoConfigureEmbeddedDatabase.DatabaseType.POSTGRES)
+public class GoodsInvestimentosApplicationTests {
 
-    static {
-        postgreSQLContainer = new PostgreSQLContainer<>(POSTGRES_IMAGE)
-                .withDatabaseName("goods_db_test")
-                .withUsername("postgres")
-                .withPassword("postgres")
-                .withReuse(true);
+    @Autowired
+    protected MockMvc mockMvc;
+}
+```
 
-        postgreSQLContainer.start();
-    }
+Test class example:
+```java
+@Nested
+@Sql(scripts = {"/scripts/clear-all.sql", "/scripts/acoes-br/findall/setup-comum.sql"})
+class FindById {
 
-    @DynamicPropertySource
-    static void registerPgProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-        registry.add("spring.datasource.driver-class-name", () -> "org.postgresql.Driver");
+    @Test
+    void sucesso() throws Exception {
+        ZonedDateTime time = ZonedDateTime.of(2024, 1, 15, 12, 0, 0, 0, ZoneOffset.UTC);
+        LancamentoAcaoBrEntity entity = repository.findByTime(time);
+        assertNotNull(entity, "Entity should exist in the database");
+        Long id = entity.getId();
+
+        mockMvc.perform(get("/api/lancamentos/acoes-br/{id}", id)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.ativo", is("PETR4")))
+                .andExpect(jsonPath("$.precoAtivo", is(35.78)))
+                .andExpect(jsonPath("$.quantidade", is(100.00000000)))
+                .andDo(print());
     }
 }
 ```

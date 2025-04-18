@@ -9,12 +9,14 @@ import java.util.List;
 
 @Repository
 public interface LancamentoRendaFixaRepository extends JpaRepository<LancamentoRendaFixaEntity, Long> {
-    
+
     List<LancamentoRendaFixaEntity> findByIdUsuario(Integer idUsuario);
-    
+
     List<LancamentoRendaFixaEntity> findByIdUsuarioAndDataDeCompraBetween(Integer idUsuario, LocalDate startDate, LocalDate endDate);
-    
+
     List<LancamentoRendaFixaEntity> findByIdUsuarioAndTipoDeTitulo(Integer idUsuario, String tipoDeTitulo);
-    
+
     List<LancamentoRendaFixaEntity> findByIdUsuarioAndEmissor(Integer idUsuario, String emissor);
+
+    LancamentoRendaFixaEntity findByDataDeCompra(LocalDate dataDeCompra);
 }
