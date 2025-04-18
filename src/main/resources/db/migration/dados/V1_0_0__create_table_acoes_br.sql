@@ -11,6 +11,9 @@ create table lancamento_acao_br (
     preco_medio_antes_operacao numeric(20,8) not null
 );
 
+ALTER TABLE lancamento_acao_br ADD COLUMN id SERIAL;
+ALTER TABLE lancamento_acao_br ADD CONSTRAINT lancamento_acao_br_id_unique UNIQUE (id, time);
+
 CREATE INDEX lancamento_acao_br_usuario_idx ON lancamento_acao_br ( id_usuario, time DESC);
 
 

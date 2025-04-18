@@ -8,11 +8,13 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Repository
-public interface LancamentoAcaoBrRepository extends JpaRepository<LancamentoAcaoBrEntity, ZonedDateTime> {
+public interface LancamentoAcaoBrRepository extends JpaRepository<LancamentoAcaoBrEntity, Long> {
 
     List<LancamentoAcaoBrEntity> findByIdUsuario(Integer idUsuario);
 
     List<LancamentoAcaoBrEntity> findByIdUsuarioAndTimeBetween(Integer idUsuario, ZonedDateTime startDate, ZonedDateTime endDate);
 
     List<LancamentoAcaoBrEntity> findByIdUsuarioAndAtivo(Integer idUsuario, String ativo);
+
+    LancamentoAcaoBrEntity findByTime(ZonedDateTime time);
 }

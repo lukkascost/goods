@@ -9,13 +9,19 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "lancamento_acao_br")
+@Table(name = "lancamento_acao_br", uniqueConstraints = {
+    @UniqueConstraint(name = "lancamento_acao_br_id_unique", columnNames = {"id", "time"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LancamentoAcaoBrEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
     @Column(name = "time", nullable = false)
     private ZonedDateTime time;
 

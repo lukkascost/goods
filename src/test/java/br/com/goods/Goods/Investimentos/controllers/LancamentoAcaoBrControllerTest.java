@@ -72,8 +72,11 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
         @Test
         void sucesso() throws Exception {
             ZonedDateTime time = ZonedDateTime.of(2024, 1, 15, 12, 0, 0, 0, ZoneOffset.UTC);
+            LancamentoAcaoBrEntity entity = repository.findByTime(time);
+            assertNotNull(entity, "Entity should exist in the database");
+            Long id = entity.getId();
 
-            mockMvc.perform(get("/api/lancamentos/acoes-br/{time}", time)
+            mockMvc.perform(get("/api/lancamentos/acoes-br/{id}", id)
                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.ativo", is("PETR4")))
@@ -84,9 +87,9 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void naoEncontrado() throws Exception {
-            ZonedDateTime time = ZonedDateTime.of(2024, 2, 1, 12, 0, 0, 0, ZoneOffset.UTC);
+            Long nonExistentId = 999L;
 
-            mockMvc.perform(get("/api/lancamentos/acoes-br/{time}", time)
+            mockMvc.perform(get("/api/lancamentos/acoes-br/{id}", nonExistentId)
                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())
                     .andDo(print());
@@ -207,7 +210,7 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
                     .andDo(print());
 
             // Verify data was saved correctly in the database
-            LancamentoAcaoBrEntity savedEntity = repository.findById(testDate).orElse(null);
+            LancamentoAcaoBrEntity savedEntity = repository.findByTime(testDate);
             assertNotNull(savedEntity, "Entity should be saved in the database");
             assertEquals("ITUB4", savedEntity.getAtivo());
             assertEquals(0, new BigDecimal("32.45").compareTo(savedEntity.getPrecoAtivo()), 
@@ -249,6 +252,10 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
         void sucesso() throws Exception {
             ZonedDateTime time = ZonedDateTime.of(2024, 1, 15, 12, 0, 0, 0, ZoneOffset.UTC);
 
+            LancamentoAcaoBrEntity entity = repository.findByTime(time);
+            assertNotNull(entity, "Entity should exist in the database");
+            Long id = entity.getId();
+
             LancamentoAcaoBrRequestDTO requestDTO = new LancamentoAcaoBrRequestDTO();
             requestDTO.setAtivo("PETR4");
             requestDTO.setTime(time);
@@ -261,7 +268,7 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
             requestDTO.setOrigem("CLEAR");
             requestDTO.setPrecoMedioAntesOperacao(new BigDecimal("0.00000000"));
 
-            mockMvc.perform(put("/api/lancamentos/acoes-br/{time}", time)
+            mockMvc.perform(put("/api/lancamentos/acoes-br/{id}", id)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(requestDTO))
                     .accept(MediaType.APPLICATION_JSON))
@@ -274,11 +281,11 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void naoEncontrado() throws Exception {
-            ZonedDateTime time = ZonedDateTime.of(2024, 2, 1, 12, 0, 0, 0, ZoneOffset.UTC);
+            Long nonExistentId = 999L;
 
             LancamentoAcaoBrRequestDTO requestDTO = new LancamentoAcaoBrRequestDTO();
             requestDTO.setAtivo("PETR4");
-            requestDTO.setTime(time);
+            requestDTO.setTime(ZonedDateTime.of(2024, 2, 1, 12, 0, 0, 0, ZoneOffset.UTC));
             requestDTO.setPrecoAtivo(new BigDecimal("36.50"));
             requestDTO.setQuantidade(new BigDecimal("120.00000000"));
             requestDTO.setOutrosCustos(new BigDecimal("5.90"));
@@ -288,7 +295,7 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
             requestDTO.setOrigem("CLEAR");
             requestDTO.setPrecoMedioAntesOperacao(new BigDecimal("0.00000000"));
 
-            mockMvc.perform(put("/api/lancamentos/acoes-br/{time}", time)
+            mockMvc.perform(put("/api/lancamentos/acoes-br/{id}", nonExistentId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(requestDTO))
                     .accept(MediaType.APPLICATION_JSON))
@@ -304,14 +311,17 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
         @Test
         void sucesso() throws Exception {
             ZonedDateTime time = ZonedDateTime.of(2024, 1, 15, 12, 0, 0, 0, ZoneOffset.UTC);
+            LancamentoAcaoBrEntity entity = repository.findByTime(time);
+            assertNotNull(entity, "Entity should exist in the database");
+            Long id = entity.getId();
 
-            mockMvc.perform(delete("/api/lancamentos/acoes-br/{time}", time)
+            mockMvc.perform(delete("/api/lancamentos/acoes-br/{id}", id)
                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent())
                     .andDo(print());
 
             // Verify it's deleted
-            mockMvc.perform(get("/api/lancamentos/acoes-br/{time}", time)
+            mockMvc.perform(get("/api/lancamentos/acoes-br/{id}", id)
                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())
                     .andDo(print());
@@ -319,9 +329,9 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void naoEncontrado() throws Exception {
-            ZonedDateTime time = ZonedDateTime.of(2024, 2, 1, 12, 0, 0, 0, ZoneOffset.UTC);
+            Long nonExistentId = 999L;
 
-            mockMvc.perform(delete("/api/lancamentos/acoes-br/{time}", time)
+            mockMvc.perform(delete("/api/lancamentos/acoes-br/{id}", nonExistentId)
                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())
                     .andDo(print());

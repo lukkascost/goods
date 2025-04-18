@@ -32,10 +32,10 @@ public class LancamentoAcaoBrService {
     }
 
     @Transactional(readOnly = true)
-    public LancamentoAcaoBrResponseDTO findById(ZonedDateTime time) {
-        return repository.findById(time)
+    public LancamentoAcaoBrResponseDTO findById(Long id) {
+        return repository.findById(id)
                 .map(this::convertToResponseDTO)
-                .orElseThrow(() -> new EntityNotFoundException("Lançamento não encontrado com a data: " + time));
+                .orElseThrow(() -> new EntityNotFoundException("Lançamento não encontrado com o id: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -67,23 +67,23 @@ public class LancamentoAcaoBrService {
     }
 
     @Transactional
-    public LancamentoAcaoBrResponseDTO update(ZonedDateTime time, LancamentoAcaoBrRequestDTO requestDTO) {
-        if (!repository.existsById(time)) {
-            throw new EntityNotFoundException("Lançamento não encontrado com a data: " + time);
-        }
+    public LancamentoAcaoBrResponseDTO update(Long id, LancamentoAcaoBrRequestDTO requestDTO) {
+        LancamentoAcaoBrEntity existingEntity = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Lançamento não encontrado com o id: " + id));
 
         LancamentoAcaoBrEntity entity = convertToEntity(requestDTO);
-        entity.setTime(time); // Ensure we're updating the correct entity
+        entity.setId(id); // Ensure we're updating the correct entity
+        entity.setTime(existingEntity.getTime()); // Preserve the original time
         LancamentoAcaoBrEntity savedEntity = repository.save(entity);
         return convertToResponseDTO(savedEntity);
     }
 
     @Transactional
-    public void delete(ZonedDateTime time) {
-        if (!repository.existsById(time)) {
-            throw new EntityNotFoundException("Lançamento não encontrado com a data: " + time);
+    public void delete(Long id) {
+        if (!repository.existsById(id)) {
+            throw new EntityNotFoundException("Lançamento não encontrado com o id: " + id);
         }
-        repository.deleteById(time);
+        repository.deleteById(id);
     }
 
     private LancamentoAcaoBrEntity convertToEntity(LancamentoAcaoBrRequestDTO requestDTO) {
