@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor
@@ -21,7 +21,7 @@ public class LancamentoCriptoRequestDTO {
     private String ativo;
 
     @NotNull(message = "Data é obrigatória")
-    private LocalDate time;
+    private ZonedDateTime time;
 
     @NotNull(message = "Preço do ativo é obrigatório")
     @Positive(message = "Preço do ativo deve ser maior que zero")

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +46,7 @@ public class LancamentoCriptoService {
     }
 
     @Transactional(readOnly = true)
-    public List<LancamentoCriptoResponseDTO> findByIdUsuarioAndTimeBetween(Integer idUsuario, LocalDate startDate, LocalDate endDate) {
+    public List<LancamentoCriptoResponseDTO> findByIdUsuarioAndTimeBetween(Integer idUsuario, ZonedDateTime startDate, ZonedDateTime endDate) {
         return repository.findByIdUsuarioAndTimeBetween(idUsuario, startDate, endDate).stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
@@ -71,7 +71,7 @@ public class LancamentoCriptoService {
         if (!repository.existsById(id)) {
             throw new EntityNotFoundException("Lançamento não encontrado com ID: " + id);
         }
-        
+
         LancamentoCriptoEntity entity = convertToEntity(requestDTO);
         entity.setId(id);
         LancamentoCriptoEntity updatedEntity = repository.save(entity);

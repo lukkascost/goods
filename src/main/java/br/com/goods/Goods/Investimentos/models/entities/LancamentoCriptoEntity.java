@@ -6,10 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "lancamento_cripto")
+@Table(name = "lancamento_cripto", uniqueConstraints = {
+    @UniqueConstraint(name = "lancamento_cripto_id_unique", columnNames = {"id", "time"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,7 +25,7 @@ public class LancamentoCriptoEntity {
     private String ativo;
 
     @Column(name = "time", nullable = false)
-    private LocalDate time;
+    private ZonedDateTime time;
 
     @Column(name = "preco_ativo", nullable = false, precision = 20, scale = 8)
     private BigDecimal precoAtivo;

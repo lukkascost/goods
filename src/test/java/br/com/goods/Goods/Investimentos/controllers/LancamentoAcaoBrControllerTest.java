@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
@@ -305,11 +306,8 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
                     .andExpect(status().isNoContent())
                     .andDo(print());
 
-            // Verify it's deleted
-            mockMvc.perform(get("/api/lancamentos/acoes-br/{id}", id)
-                    .accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isNotFound())
-                    .andDo(print());
+            // Verify it's deleted directly from the database
+            assertFalse(repository.existsById(id), "Entity should be removed from the database");
         }
 
         @Test
