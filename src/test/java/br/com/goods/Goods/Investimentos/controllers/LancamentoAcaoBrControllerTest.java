@@ -21,6 +21,9 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -38,6 +41,9 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private LancamentoAcaoBrRepository repository;
 
     @Nested
     @Sql(scripts = {"/scripts/clear-all.sql", "/scripts/acoes-br/findall/setup-comum.sql"})
@@ -173,37 +179,61 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void sucesso() throws Exception {
-            LancamentoAcaoBrRequestDTO requestDTO = new LancamentoAcaoBrRequestDTO();
-            requestDTO.setAtivo("ITUB4");
-            requestDTO.setTime(LocalDate.of(2024, 1, 20));
-            requestDTO.setPrecoAtivo(new BigDecimal("32.45"));
-            requestDTO.setQuantidade(new BigDecimal("200.00000000"));
-            requestDTO.setOutrosCustos(new BigDecimal("5.90"));
-            requestDTO.setAtivoFiat("BRL");
-            requestDTO.setIdUsuario(1);
-            requestDTO.setOperacao("COMPRA");
-            requestDTO.setOrigem("CLEAR");
-            requestDTO.setPrecoMedioAntesOperacao(new BigDecimal("0.00000000"));
+            LocalDate testDate = LocalDate.of(2024, 1, 20);
+            String jsonContent = """
+                {
+                    "ativo": "ITUB4",
+                    "time": "2024-01-20",
+                    "precoAtivo": 32.45,
+                    "quantidade": 200.00000000,
+                    "outrosCustos": 5.90,
+                    "ativoFiat": "BRL",
+                    "idUsuario": 1,
+                    "operacao": "COMPRA",
+                    "origem": "CLEAR",
+                    "precoMedioAntesOperacao": 0.00000000
+                }
+                """;
 
             mockMvc.perform(post("/api/lancamentos/acoes-br")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(requestDTO))
+                    .content(jsonContent)
                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.ativo", is("ITUB4")))
                     .andExpect(jsonPath("$.precoAtivo", is(32.45)))
                     .andExpect(jsonPath("$.quantidade", is(200.00000000)))
                     .andDo(print());
+
+            // Verify data was saved correctly in the database
+            LancamentoAcaoBrEntity savedEntity = repository.findById(testDate).orElse(null);
+            assertNotNull(savedEntity, "Entity should be saved in the database");
+            assertEquals("ITUB4", savedEntity.getAtivo());
+            assertEquals(0, new BigDecimal("32.45").compareTo(savedEntity.getPrecoAtivo()), 
+                "PrecoAtivo should be 32.45, but was " + savedEntity.getPrecoAtivo());
+            assertEquals(0, new BigDecimal("200.00000000").compareTo(savedEntity.getQuantidade()),
+                "Quantidade should be 200.00000000, but was " + savedEntity.getQuantidade());
+            assertEquals(0, new BigDecimal("5.90").compareTo(savedEntity.getOutrosCustos()),
+                "OutrosCustos should be 5.90, but was " + savedEntity.getOutrosCustos());
+            assertEquals("BRL", savedEntity.getAtivoFiat());
+            assertEquals(Integer.valueOf(1), savedEntity.getIdUsuario());
+            assertEquals("COMPRA", savedEntity.getOperacao());
+            assertEquals("CLEAR", savedEntity.getOrigem());
+            assertEquals(0, new BigDecimal("0.00000000").compareTo(savedEntity.getPrecoMedioAntesOperacao()),
+                "PrecoMedioAntesOperacao should be 0.00000000, but was " + savedEntity.getPrecoMedioAntesOperacao());
         }
 
         @Test
         void validacaoFalha() throws Exception {
-            LancamentoAcaoBrRequestDTO requestDTO = new LancamentoAcaoBrRequestDTO();
-            // Missing required fields
+            // JSON with missing required fields
+            String jsonContent = """
+                {
+                }
+                """;
 
             mockMvc.perform(post("/api/lancamentos/acoes-br")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(requestDTO))
+                    .content(jsonContent)
                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest())
                     .andDo(print());
