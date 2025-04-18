@@ -10,7 +10,8 @@ create table lancamento_cripto (
     origem character varying(10) not null,
     preco_medio_antes_operacao numeric(20,8) not null
 );
-
+ALTER TABLE lancamento_cripto ADD COLUMN id SERIAL;
+ALTER TABLE lancamento_cripto ADD CONSTRAINT lancamento_cripto_id_unique UNIQUE (id, time);
 CREATE INDEX lancamento_cripto_usuario_idx ON lancamento_cripto ( id_usuario, time DESC);
 
 SELECT create_hypertable('lancamento_cripto', by_range('time', INTERVAL '30 days'));

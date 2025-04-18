@@ -5,7 +5,6 @@ import br.com.goods.Goods.Investimentos.models.dto.LancamentoAcaoBrRequestDTO;
 import br.com.goods.Goods.Investimentos.models.entities.LancamentoAcaoBrEntity;
 import br.com.goods.Goods.Investimentos.repositories.LancamentoAcaoBrRepository;
 import br.com.goods.Goods.Investimentos.services.LancamentoAcaoBrService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -41,29 +40,7 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private LancamentoAcaoBrRepository repository;
-
-    @Nested
-    @Sql(scripts = {"/scripts/clear-all.sql", "/scripts/acoes-br/findall/setup-comum.sql"})
-    class FindAll {
-        //Caso seja encontrado um bug no endpoint findAll futuro, o teste que previne que o bug retorne deve ser criado nesta subclasse;
-
-        @Test
-        void sucesso() throws Exception {
-            RequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .get("/api/lancamentos/acoes-br")
-                    .accept(MediaType.APPLICATION_JSON);
-
-            mockMvc.perform(requestBuilder)
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(3)))
-                    .andDo(print())
-                    .andReturn();
-        }
-    }
 
     @Nested
     @Sql(scripts = {"/scripts/clear-all.sql", "/scripts/acoes-br/findall/setup-comum.sql"})
@@ -210,6 +187,8 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
                     .andDo(print());
 
             // Verify data was saved correctly in the database
+            assertEquals(1, repository.count());
+
             LancamentoAcaoBrEntity savedEntity = repository.findByTime(testDate);
             assertNotNull(savedEntity, "Entity should be saved in the database");
             assertEquals("ITUB4", savedEntity.getAtivo());
@@ -256,21 +235,24 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
             assertNotNull(entity, "Entity should exist in the database");
             Long id = entity.getId();
 
-            LancamentoAcaoBrRequestDTO requestDTO = new LancamentoAcaoBrRequestDTO();
-            requestDTO.setAtivo("PETR4");
-            requestDTO.setTime(time);
-            requestDTO.setPrecoAtivo(new BigDecimal("36.50"));
-            requestDTO.setQuantidade(new BigDecimal("120.00000000"));
-            requestDTO.setOutrosCustos(new BigDecimal("5.90"));
-            requestDTO.setAtivoFiat("BRL");
-            requestDTO.setIdUsuario(1);
-            requestDTO.setOperacao("COMPRA");
-            requestDTO.setOrigem("CLEAR");
-            requestDTO.setPrecoMedioAntesOperacao(new BigDecimal("0.00000000"));
+            String jsonContent = """
+                {
+                    "ativo": "PETR4",
+                    "time": "2024-01-15T12:00:00+00:00",
+                    "precoAtivo": 36.50,
+                    "quantidade": 120.00000000,
+                    "outrosCustos": 5.90,
+                    "ativoFiat": "BRL",
+                    "idUsuario": 1,
+                    "operacao": "COMPRA",
+                    "origem": "CLEAR",
+                    "precoMedioAntesOperacao": 0.00000000
+                }
+                """;
 
             mockMvc.perform(put("/api/lancamentos/acoes-br/{id}", id)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(requestDTO))
+                    .content(jsonContent)
                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.ativo", is("PETR4")))
@@ -283,21 +265,24 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
         void naoEncontrado() throws Exception {
             Long nonExistentId = 999L;
 
-            LancamentoAcaoBrRequestDTO requestDTO = new LancamentoAcaoBrRequestDTO();
-            requestDTO.setAtivo("PETR4");
-            requestDTO.setTime(ZonedDateTime.of(2024, 2, 1, 12, 0, 0, 0, ZoneOffset.UTC));
-            requestDTO.setPrecoAtivo(new BigDecimal("36.50"));
-            requestDTO.setQuantidade(new BigDecimal("120.00000000"));
-            requestDTO.setOutrosCustos(new BigDecimal("5.90"));
-            requestDTO.setAtivoFiat("BRL");
-            requestDTO.setIdUsuario(1);
-            requestDTO.setOperacao("COMPRA");
-            requestDTO.setOrigem("CLEAR");
-            requestDTO.setPrecoMedioAntesOperacao(new BigDecimal("0.00000000"));
+            String jsonContent = """
+                {
+                    "ativo": "PETR4",
+                    "time": "2024-02-01T12:00:00+00:00",
+                    "precoAtivo": 36.50,
+                    "quantidade": 120.00000000,
+                    "outrosCustos": 5.90,
+                    "ativoFiat": "BRL",
+                    "idUsuario": 1,
+                    "operacao": "COMPRA",
+                    "origem": "CLEAR",
+                    "precoMedioAntesOperacao": 0.00000000
+                }
+                """;
 
             mockMvc.perform(put("/api/lancamentos/acoes-br/{id}", nonExistentId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(requestDTO))
+                    .content(jsonContent)
                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())
                     .andDo(print());

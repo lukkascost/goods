@@ -25,11 +25,6 @@ public class LancamentoAcaoBrController {
         this.service = service;
     }
 
-    @GetMapping
-    public ResponseEntity<List<LancamentoAcaoBrResponseDTO>> findAll() {
-        return ResponseEntity.ok(service.findAll());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<LancamentoAcaoBrResponseDTO> findById(@PathVariable Long id) {
         try {

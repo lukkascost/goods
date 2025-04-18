@@ -25,13 +25,6 @@ public class LancamentoAcaoBrService {
     }
 
     @Transactional(readOnly = true)
-    public List<LancamentoAcaoBrResponseDTO> findAll() {
-        return repository.findAll().stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
     public LancamentoAcaoBrResponseDTO findById(Long id) {
         return repository.findById(id)
                 .map(this::convertToResponseDTO)
