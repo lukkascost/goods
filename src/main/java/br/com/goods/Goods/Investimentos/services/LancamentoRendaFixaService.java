@@ -1,5 +1,6 @@
 package br.com.goods.Goods.Investimentos.services;
 
+import br.com.goods.Goods.Investimentos.mappers.LancamentoRendaFixaMapper;
 import br.com.goods.Goods.Investimentos.models.dto.LancamentoRendaFixaRequestDTO;
 import br.com.goods.Goods.Investimentos.models.dto.LancamentoRendaFixaResponseDTO;
 import br.com.goods.Goods.Investimentos.models.entities.LancamentoRendaFixaEntity;
@@ -18,10 +19,12 @@ import java.util.stream.Collectors;
 public class LancamentoRendaFixaService {
 
     private final LancamentoRendaFixaRepository repository;
+    private final LancamentoRendaFixaMapper mapper;
 
     @Autowired
-    public LancamentoRendaFixaService(LancamentoRendaFixaRepository repository) {
+    public LancamentoRendaFixaService(LancamentoRendaFixaRepository repository, LancamentoRendaFixaMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     @Transactional(readOnly = true)
@@ -78,7 +81,7 @@ public class LancamentoRendaFixaService {
         if (!repository.existsById(id)) {
             throw new EntityNotFoundException("Lançamento não encontrado com ID: " + id);
         }
-        
+
         LancamentoRendaFixaEntity entity = convertToEntity(requestDTO);
         entity.setId(id);
         LancamentoRendaFixaEntity updatedEntity = repository.save(entity);
