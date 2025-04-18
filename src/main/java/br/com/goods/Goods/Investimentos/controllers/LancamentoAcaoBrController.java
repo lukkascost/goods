@@ -30,10 +30,11 @@ public class LancamentoAcaoBrController {
         return ResponseEntity.ok(service.findAll());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<LancamentoAcaoBrResponseDTO> findById(@PathVariable Long id) {
+    @GetMapping("/{time}")
+    public ResponseEntity<LancamentoAcaoBrResponseDTO> findById(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate time) {
         try {
-            return ResponseEntity.ok(service.findById(id));
+            return ResponseEntity.ok(service.findById(time));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -65,22 +66,23 @@ public class LancamentoAcaoBrController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{time}")
     public ResponseEntity<LancamentoAcaoBrResponseDTO> update(
-            @PathVariable Long id,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate time,
             @Valid @RequestBody LancamentoAcaoBrRequestDTO requestDTO) {
         try {
-            LancamentoAcaoBrResponseDTO responseDTO = service.update(id, requestDTO);
+            LancamentoAcaoBrResponseDTO responseDTO = service.update(time, requestDTO);
             return ResponseEntity.ok(responseDTO);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @DeleteMapping("/{time}")
+    public ResponseEntity<Void> delete(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate time) {
         try {
-            service.delete(id);
+            service.delete(time);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();

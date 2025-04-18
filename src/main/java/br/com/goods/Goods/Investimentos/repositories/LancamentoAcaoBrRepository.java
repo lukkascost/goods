@@ -5,15 +5,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface LancamentoAcaoBrRepository extends JpaRepository<LancamentoAcaoBrEntity, LocalDateTime> {
-    
+public interface LancamentoAcaoBrRepository extends JpaRepository<LancamentoAcaoBrEntity, LocalDate> {
+
     List<LancamentoAcaoBrEntity> findByIdUsuario(Integer idUsuario);
-    
+
     List<LancamentoAcaoBrEntity> findByIdUsuarioAndTimeBetween(Integer idUsuario, LocalDate startDate, LocalDate endDate);
-    
+
     List<LancamentoAcaoBrEntity> findByIdUsuarioAndAtivo(Integer idUsuario, String ativo);
 }

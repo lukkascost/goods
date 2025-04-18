@@ -32,6 +32,13 @@ public class LancamentoAcaoBrService {
     }
 
     @Transactional(readOnly = true)
+    public LancamentoAcaoBrResponseDTO findById(LocalDate time) {
+        return repository.findById(time)
+                .map(this::convertToResponseDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Lançamento não encontrado com a data: " + time));
+    }
+
+    @Transactional(readOnly = true)
     public List<LancamentoAcaoBrResponseDTO> findByIdUsuario(Integer idUsuario) {
         return repository.findByIdUsuario(idUsuario).stream()
                 .map(this::convertToResponseDTO)
@@ -59,7 +66,27 @@ public class LancamentoAcaoBrService {
         return convertToResponseDTO(savedEntity);
     }
 
-       private LancamentoAcaoBrEntity convertToEntity(LancamentoAcaoBrRequestDTO requestDTO) {
+    @Transactional
+    public LancamentoAcaoBrResponseDTO update(LocalDate time, LancamentoAcaoBrRequestDTO requestDTO) {
+        if (!repository.existsById(time)) {
+            throw new EntityNotFoundException("Lançamento não encontrado com a data: " + time);
+        }
+
+        LancamentoAcaoBrEntity entity = convertToEntity(requestDTO);
+        entity.setTime(time); // Ensure we're updating the correct entity
+        LancamentoAcaoBrEntity savedEntity = repository.save(entity);
+        return convertToResponseDTO(savedEntity);
+    }
+
+    @Transactional
+    public void delete(LocalDate time) {
+        if (!repository.existsById(time)) {
+            throw new EntityNotFoundException("Lançamento não encontrado com a data: " + time);
+        }
+        repository.deleteById(time);
+    }
+
+    private LancamentoAcaoBrEntity convertToEntity(LancamentoAcaoBrRequestDTO requestDTO) {
         LancamentoAcaoBrEntity entity = new LancamentoAcaoBrEntity();
         BeanUtils.copyProperties(requestDTO, entity);
         return entity;
