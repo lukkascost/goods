@@ -1,7 +1,7 @@
 create table lancamento_renda_fixa (
     tipo_de_titulo character varying(10) not null,
-    data_de_compra date not null,
-    data_de_vencimento date not null,
+    data_de_compra timestamp with time zone not null,
+    data_de_vencimento timestamp with time zone not null,
     emissor character varying(100) not null,
     indexador character varying(10) null,
     valor_investido numeric(20,8) not null,

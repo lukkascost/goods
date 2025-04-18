@@ -1,6 +1,6 @@
 create table lancamento_etf_inter (
     ativo character varying(10) not null,
-    time date not null,
+    time timestamp with time zone not null,
     preco_ativo numeric(20,8) not null,
     quantidade numeric(20,8) not null,
     outros_custos numeric(20,8) not null,
