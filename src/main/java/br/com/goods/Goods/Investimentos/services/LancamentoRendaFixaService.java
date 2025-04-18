@@ -6,7 +6,6 @@ import br.com.goods.Goods.Investimentos.models.dto.LancamentoRendaFixaResponseDT
 import br.com.goods.Goods.Investimentos.models.entities.LancamentoRendaFixaEntity;
 import br.com.goods.Goods.Investimentos.repositories.LancamentoRendaFixaRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,7 @@ public class LancamentoRendaFixaService {
     @Transactional(readOnly = true)
     public List<LancamentoRendaFixaResponseDTO> findAll() {
         return repository.findAll().stream()
-                .map(this::convertToResponseDTO)
+                .map(mapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
@@ -38,42 +37,42 @@ public class LancamentoRendaFixaService {
     public LancamentoRendaFixaResponseDTO findById(Long id) {
         LancamentoRendaFixaEntity entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Lançamento não encontrado com ID: " + id));
-        return convertToResponseDTO(entity);
+        return mapper.toResponseDTO(entity);
     }
 
     @Transactional(readOnly = true)
     public List<LancamentoRendaFixaResponseDTO> findByIdUsuario(Integer idUsuario) {
         return repository.findByIdUsuario(idUsuario).stream()
-                .map(this::convertToResponseDTO)
+                .map(mapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<LancamentoRendaFixaResponseDTO> findByIdUsuarioAndDataDeCompraBetween(Integer idUsuario, LocalDate startDate, LocalDate endDate) {
         return repository.findByIdUsuarioAndDataDeCompraBetween(idUsuario, startDate, endDate).stream()
-                .map(this::convertToResponseDTO)
+                .map(mapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<LancamentoRendaFixaResponseDTO> findByIdUsuarioAndTipoDeTitulo(Integer idUsuario, String tipoDeTitulo) {
         return repository.findByIdUsuarioAndTipoDeTitulo(idUsuario, tipoDeTitulo).stream()
-                .map(this::convertToResponseDTO)
+                .map(mapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<LancamentoRendaFixaResponseDTO> findByIdUsuarioAndEmissor(Integer idUsuario, String emissor) {
         return repository.findByIdUsuarioAndEmissor(idUsuario, emissor).stream()
-                .map(this::convertToResponseDTO)
+                .map(mapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public LancamentoRendaFixaResponseDTO create(LancamentoRendaFixaRequestDTO requestDTO) {
-        LancamentoRendaFixaEntity entity = convertToEntity(requestDTO);
+        LancamentoRendaFixaEntity entity = mapper.toEntity(requestDTO);
         LancamentoRendaFixaEntity savedEntity = repository.save(entity);
-        return convertToResponseDTO(savedEntity);
+        return mapper.toResponseDTO(savedEntity);
     }
 
     @Transactional
@@ -82,10 +81,10 @@ public class LancamentoRendaFixaService {
             throw new EntityNotFoundException("Lançamento não encontrado com ID: " + id);
         }
 
-        LancamentoRendaFixaEntity entity = convertToEntity(requestDTO);
+        LancamentoRendaFixaEntity entity = mapper.toEntity(requestDTO);
         entity.setId(id);
         LancamentoRendaFixaEntity updatedEntity = repository.save(entity);
-        return convertToResponseDTO(updatedEntity);
+        return mapper.toResponseDTO(updatedEntity);
     }
 
     @Transactional
@@ -94,17 +93,5 @@ public class LancamentoRendaFixaService {
             throw new EntityNotFoundException("Lançamento não encontrado com ID: " + id);
         }
         repository.deleteById(id);
-    }
-
-    private LancamentoRendaFixaEntity convertToEntity(LancamentoRendaFixaRequestDTO requestDTO) {
-        LancamentoRendaFixaEntity entity = new LancamentoRendaFixaEntity();
-        BeanUtils.copyProperties(requestDTO, entity);
-        return entity;
-    }
-
-    private LancamentoRendaFixaResponseDTO convertToResponseDTO(LancamentoRendaFixaEntity entity) {
-        LancamentoRendaFixaResponseDTO responseDTO = new LancamentoRendaFixaResponseDTO();
-        BeanUtils.copyProperties(entity, responseDTO);
-        return responseDTO;
     }
 }
