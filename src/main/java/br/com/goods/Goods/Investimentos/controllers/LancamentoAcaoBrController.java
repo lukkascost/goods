@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @RestController
@@ -32,7 +32,7 @@ public class LancamentoAcaoBrController {
 
     @GetMapping("/{time}")
     public ResponseEntity<LancamentoAcaoBrResponseDTO> findById(
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate time) {
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime time) {
         try {
             return ResponseEntity.ok(service.findById(time));
         } catch (EntityNotFoundException e) {
@@ -48,8 +48,8 @@ public class LancamentoAcaoBrController {
     @GetMapping("/usuario/{idUsuario}/periodo")
     public ResponseEntity<List<LancamentoAcaoBrResponseDTO>> findByIdUsuarioAndTimeBetween(
             @PathVariable Integer idUsuario,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime endDate) {
         return ResponseEntity.ok(service.findByIdUsuarioAndTimeBetween(idUsuario, startDate, endDate));
     }
 
@@ -68,7 +68,7 @@ public class LancamentoAcaoBrController {
 
     @PutMapping("/{time}")
     public ResponseEntity<LancamentoAcaoBrResponseDTO> update(
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate time,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime time,
             @Valid @RequestBody LancamentoAcaoBrRequestDTO requestDTO) {
         try {
             LancamentoAcaoBrResponseDTO responseDTO = service.update(time, requestDTO);
@@ -80,7 +80,7 @@ public class LancamentoAcaoBrController {
 
     @DeleteMapping("/{time}")
     public ResponseEntity<Void> delete(
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate time) {
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime time) {
         try {
             service.delete(time);
             return ResponseEntity.noContent().build();

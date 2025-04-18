@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +32,7 @@ public class LancamentoAcaoBrService {
     }
 
     @Transactional(readOnly = true)
-    public LancamentoAcaoBrResponseDTO findById(LocalDate time) {
+    public LancamentoAcaoBrResponseDTO findById(ZonedDateTime time) {
         return repository.findById(time)
                 .map(this::convertToResponseDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Lançamento não encontrado com a data: " + time));
@@ -46,7 +46,7 @@ public class LancamentoAcaoBrService {
     }
 
     @Transactional(readOnly = true)
-    public List<LancamentoAcaoBrResponseDTO> findByIdUsuarioAndTimeBetween(Integer idUsuario, LocalDate startDate, LocalDate endDate) {
+    public List<LancamentoAcaoBrResponseDTO> findByIdUsuarioAndTimeBetween(Integer idUsuario, ZonedDateTime startDate, ZonedDateTime endDate) {
         return repository.findByIdUsuarioAndTimeBetween(idUsuario, startDate, endDate).stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
@@ -67,7 +67,7 @@ public class LancamentoAcaoBrService {
     }
 
     @Transactional
-    public LancamentoAcaoBrResponseDTO update(LocalDate time, LancamentoAcaoBrRequestDTO requestDTO) {
+    public LancamentoAcaoBrResponseDTO update(ZonedDateTime time, LancamentoAcaoBrRequestDTO requestDTO) {
         if (!repository.existsById(time)) {
             throw new EntityNotFoundException("Lançamento não encontrado com a data: " + time);
         }
@@ -79,7 +79,7 @@ public class LancamentoAcaoBrService {
     }
 
     @Transactional
-    public void delete(LocalDate time) {
+    public void delete(ZonedDateTime time) {
         if (!repository.existsById(time)) {
             throw new EntityNotFoundException("Lançamento não encontrado com a data: " + time);
         }

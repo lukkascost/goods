@@ -19,7 +19,7 @@ public class JacksonSerializerConfiguration {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
         builder.serializationInclusion(JsonInclude.Include.NON_NULL);
         builder.modules(new PageJacksonModule(),new SortJacksonModule(), new JavaTimeModule(), new JsonComponentModule());
-        builder.dateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
+        builder.dateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"));
         builder.failOnUnknownProperties(false);
         return builder;
     }

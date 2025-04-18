@@ -25,7 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -70,7 +71,7 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void sucesso() throws Exception {
-            LocalDate time = LocalDate.of(2024, 1, 15);
+            ZonedDateTime time = ZonedDateTime.of(2024, 1, 15, 12, 0, 0, 0, ZoneOffset.UTC);
 
             mockMvc.perform(get("/api/lancamentos/acoes-br/{time}", time)
                     .accept(MediaType.APPLICATION_JSON))
@@ -83,7 +84,7 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void naoEncontrado() throws Exception {
-            LocalDate time = LocalDate.of(2024, 2, 1);
+            ZonedDateTime time = ZonedDateTime.of(2024, 2, 1, 12, 0, 0, 0, ZoneOffset.UTC);
 
             mockMvc.perform(get("/api/lancamentos/acoes-br/{time}", time)
                     .accept(MediaType.APPLICATION_JSON))
@@ -121,8 +122,8 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void sucesso() throws Exception {
-            LocalDate startDate = LocalDate.of(2024, 1, 15);
-            LocalDate endDate = LocalDate.of(2024, 1, 16);
+            ZonedDateTime startDate = ZonedDateTime.of(2024, 1, 15, 12, 0, 0, 0, ZoneOffset.UTC);
+            ZonedDateTime endDate = ZonedDateTime.of(2024, 1, 16, 12, 0, 0, 0, ZoneOffset.UTC);
 
             mockMvc.perform(get("/api/lancamentos/acoes-br/usuario/{idUsuario}/periodo", 1)
                     .param("startDate", startDate.toString())
@@ -136,8 +137,8 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void periodoSemLancamentos() throws Exception {
-            LocalDate startDate = LocalDate.of(2024, 2, 1);
-            LocalDate endDate = LocalDate.of(2024, 2, 28);
+            ZonedDateTime startDate = ZonedDateTime.of(2024, 2, 1, 12, 0, 0, 0, ZoneOffset.UTC);
+            ZonedDateTime endDate = ZonedDateTime.of(2024, 2, 28, 12, 0, 0, 0, ZoneOffset.UTC);
 
             mockMvc.perform(get("/api/lancamentos/acoes-br/usuario/{idUsuario}/periodo", 1)
                     .param("startDate", startDate.toString())
@@ -179,11 +180,11 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void sucesso() throws Exception {
-            LocalDate testDate = LocalDate.of(2024, 1, 20);
+            ZonedDateTime testDate = ZonedDateTime.of(2024, 1, 20, 12, 0, 0, 0, ZoneOffset.UTC);
             String jsonContent = """
                 {
                     "ativo": "ITUB4",
-                    "time": "2024-01-20",
+                    "time": "2024-01-20T12:00:00+00:00",
                     "precoAtivo": 32.45,
                     "quantidade": 200.00000000,
                     "outrosCustos": 5.90,
@@ -246,7 +247,7 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void sucesso() throws Exception {
-            LocalDate time = LocalDate.of(2024, 1, 15);
+            ZonedDateTime time = ZonedDateTime.of(2024, 1, 15, 12, 0, 0, 0, ZoneOffset.UTC);
 
             LancamentoAcaoBrRequestDTO requestDTO = new LancamentoAcaoBrRequestDTO();
             requestDTO.setAtivo("PETR4");
@@ -273,7 +274,7 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void naoEncontrado() throws Exception {
-            LocalDate time = LocalDate.of(2024, 2, 1);
+            ZonedDateTime time = ZonedDateTime.of(2024, 2, 1, 12, 0, 0, 0, ZoneOffset.UTC);
 
             LancamentoAcaoBrRequestDTO requestDTO = new LancamentoAcaoBrRequestDTO();
             requestDTO.setAtivo("PETR4");
@@ -302,7 +303,7 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void sucesso() throws Exception {
-            LocalDate time = LocalDate.of(2024, 1, 15);
+            ZonedDateTime time = ZonedDateTime.of(2024, 1, 15, 12, 0, 0, 0, ZoneOffset.UTC);
 
             mockMvc.perform(delete("/api/lancamentos/acoes-br/{time}", time)
                     .accept(MediaType.APPLICATION_JSON))
@@ -318,7 +319,7 @@ public class LancamentoAcaoBrControllerTest extends GoodsInvestimentosApplicatio
 
         @Test
         void naoEncontrado() throws Exception {
-            LocalDate time = LocalDate.of(2024, 2, 1);
+            ZonedDateTime time = ZonedDateTime.of(2024, 2, 1, 12, 0, 0, 0, ZoneOffset.UTC);
 
             mockMvc.perform(delete("/api/lancamentos/acoes-br/{time}", time)
                     .accept(MediaType.APPLICATION_JSON))

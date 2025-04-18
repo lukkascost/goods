@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "lancamento_acao_br")
@@ -17,7 +17,7 @@ public class LancamentoAcaoBrEntity {
 
     @Id
     @Column(name = "time", nullable = false)
-    private LocalDate time;
+    private ZonedDateTime time;
 
     @Column(name = "ativo", nullable = false, length = 10)
     private String ativo;

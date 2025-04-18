@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class LancamentoAcaoBrResponseDTO {
 
     private String ativo;
-    private LocalDate time;
+    private ZonedDateTime time;
     private BigDecimal precoAtivo;
     private BigDecimal quantidade;
     private BigDecimal outrosCustos;
@@ -22,10 +22,10 @@ public class LancamentoAcaoBrResponseDTO {
     private String operacao;
     private String origem;
     private BigDecimal precoMedioAntesOperacao;
-    
+
     // Campos calculados
     private BigDecimal valorTotal;
-    
+
     public BigDecimal getValorTotal() {
         if (precoAtivo != null && quantidade != null) {
             return precoAtivo.multiply(quantidade).add(outrosCustos != null ? outrosCustos : BigDecimal.ZERO);
