@@ -25,11 +25,6 @@ public class LancamentoFiiBrController {
         this.service = service;
     }
 
-    @GetMapping
-    public ResponseEntity<List<LancamentoFiiBrResponseDTO>> findAll() {
-        return ResponseEntity.ok(service.findAll());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<LancamentoFiiBrResponseDTO> findById(@PathVariable Long id) {
         try {

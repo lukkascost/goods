@@ -13,7 +13,8 @@ create table lancamento_renda_fixa (
     origem character varying(10) not null,
     preco_medio_antes_operacao numeric(20,8) not null
 );
-
+ALTER TABLE lancamento_renda_fixa ADD COLUMN id SERIAL;
+ALTER TABLE lancamento_renda_fixa ADD CONSTRAINT lancamento_renda_fixa_id_unique UNIQUE (id, data_de_compra);
 CREATE INDEX lancamento_renda_fixa_usuario_idx ON lancamento_renda_fixa ( id_usuario, data_de_compra DESC);
 
 SELECT create_hypertable('lancamento_renda_fixa', by_range('data_de_compra', INTERVAL '30 days'));

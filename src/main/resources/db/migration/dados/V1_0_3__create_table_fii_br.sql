@@ -12,5 +12,6 @@ create table lancamento_fii_br (
 );
 
 CREATE INDEX lancamento_fii_br_usuario_idx ON lancamento_fii_br ( id_usuario, time DESC);
-
+ALTER TABLE lancamento_fii_br ADD COLUMN id SERIAL;
+ALTER TABLE lancamento_fii_br ADD CONSTRAINT lancamento_fii_br_id_unique UNIQUE (id, time);
 SELECT create_hypertable('lancamento_fii_br', by_range('time', INTERVAL '30 days'));

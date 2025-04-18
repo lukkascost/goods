@@ -25,11 +25,6 @@ public class LancamentoCriptoController {
         this.service = service;
     }
 
-    @GetMapping
-    public ResponseEntity<List<LancamentoCriptoResponseDTO>> findAll() {
-        return ResponseEntity.ok(service.findAll());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<LancamentoCriptoResponseDTO> findById(@PathVariable Long id) {
         try {

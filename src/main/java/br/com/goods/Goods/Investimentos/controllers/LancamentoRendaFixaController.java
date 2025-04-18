@@ -25,10 +25,6 @@ public class LancamentoRendaFixaController {
         this.service = service;
     }
 
-    @GetMapping
-    public ResponseEntity<List<LancamentoRendaFixaResponseDTO>> findAll() {
-        return ResponseEntity.ok(service.findAll());
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<LancamentoRendaFixaResponseDTO> findById(@PathVariable Long id) {

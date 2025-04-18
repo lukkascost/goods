@@ -9,10 +9,12 @@ import java.util.List;
 
 @Repository
 public interface LancamentoEtfInterRepository extends JpaRepository<LancamentoEtfInterEntity, Long> {
-    
+
     List<LancamentoEtfInterEntity> findByIdUsuario(Integer idUsuario);
-    
+
     List<LancamentoEtfInterEntity> findByIdUsuarioAndTimeBetween(Integer idUsuario, LocalDate startDate, LocalDate endDate);
-    
+
     List<LancamentoEtfInterEntity> findByIdUsuarioAndAtivo(Integer idUsuario, String ativo);
+
+    LancamentoEtfInterEntity findByTime(LocalDate time);
 }

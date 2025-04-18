@@ -25,11 +25,6 @@ public class LancamentoEtfInterController {
         this.service = service;
     }
 
-    @GetMapping
-    public ResponseEntity<List<LancamentoEtfInterResponseDTO>> findAll() {
-        return ResponseEntity.ok(service.findAll());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<LancamentoEtfInterResponseDTO> findById(@PathVariable Long id) {
         try {
