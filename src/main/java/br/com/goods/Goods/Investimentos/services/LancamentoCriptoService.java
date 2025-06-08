@@ -1,6 +1,8 @@
 package br.com.goods.Goods.Investimentos.services;
 
 import br.com.goods.Goods.Investimentos.mappers.LancamentoCriptoMapper;
+import br.com.goods.Goods.Investimentos.mappers.LancamentoCriptoFilterMapper;
+import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoFilterDTO;
 import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoRequestDTO;
 import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoResponseDTO;
 import br.com.goods.Goods.Investimentos.models.entities.LancamentoCriptoEntity;
@@ -10,27 +12,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 @Service
 public class LancamentoCriptoService {
 
     private final LancamentoCriptoRepository repository;
     private final LancamentoCriptoMapper mapper;
+    private final LancamentoCriptoFilterMapper filterMapper;
 
     @Autowired
-    public LancamentoCriptoService(LancamentoCriptoRepository repository, LancamentoCriptoMapper mapper) {
+    public LancamentoCriptoService(LancamentoCriptoRepository repository,
+                                   LancamentoCriptoMapper mapper,
+                                   LancamentoCriptoFilterMapper filterMapper) {
         this.repository = repository;
         this.mapper = mapper;
+        this.filterMapper = filterMapper;
     }
 
     @Transactional(readOnly = true)
-    public List<LancamentoCriptoResponseDTO> findAll() {
-        return repository.findAll().stream()
-                .map(mapper::toResponseDTO)
-                .collect(Collectors.toList());
+    public Page<LancamentoCriptoResponseDTO> findAll(LancamentoCriptoFilterDTO filterDTO,
+                                                     Pageable pageable) {
+        Specification<LancamentoCriptoEntity> spec = filterMapper.toSpecification(filterDTO);
+
+        return repository.findAll(spec, pageable)
+                .map(mapper::toResponseDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<LancamentoCriptoResponseDTO> findAll(Pageable pageable) {
+        return findAll(null, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -40,26 +54,6 @@ public class LancamentoCriptoService {
         return mapper.toResponseDTO(entity);
     }
 
-    @Transactional(readOnly = true)
-    public List<LancamentoCriptoResponseDTO> findByIdUsuario(Integer idUsuario) {
-        return repository.findByIdUsuario(idUsuario).stream()
-                .map(mapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<LancamentoCriptoResponseDTO> findByIdUsuarioAndTimeBetween(Integer idUsuario, ZonedDateTime startDate, ZonedDateTime endDate) {
-        return repository.findByIdUsuarioAndTimeBetween(idUsuario, startDate, endDate).stream()
-                .map(mapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<LancamentoCriptoResponseDTO> findByIdUsuarioAndAtivo(Integer idUsuario, String ativo) {
-        return repository.findByIdUsuarioAndAtivo(idUsuario, ativo).stream()
-                .map(mapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
 
     @Transactional
     public LancamentoCriptoResponseDTO create(LancamentoCriptoRequestDTO requestDTO) {

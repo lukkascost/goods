@@ -1,18 +1,18 @@
 package br.com.goods.Goods.Investimentos.controllers;
 
+import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoFilterDTO;
 import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoRequestDTO;
 import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoResponseDTO;
 import br.com.goods.Goods.Investimentos.services.LancamentoCriptoService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.ZonedDateTime;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/lancamentos/cripto")
@@ -34,24 +34,11 @@ public class LancamentoCriptoController {
         }
     }
 
-    @GetMapping("/usuario/{idUsuario}")
-    public ResponseEntity<List<LancamentoCriptoResponseDTO>> findByIdUsuario(@PathVariable Integer idUsuario) {
-        return ResponseEntity.ok(service.findByIdUsuario(idUsuario));
-    }
-
-    @GetMapping("/usuario/{idUsuario}/periodo")
-    public ResponseEntity<List<LancamentoCriptoResponseDTO>> findByIdUsuarioAndTimeBetween(
-            @PathVariable Integer idUsuario,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) ZonedDateTime endDate) {
-        return ResponseEntity.ok(service.findByIdUsuarioAndTimeBetween(idUsuario, startDate, endDate));
-    }
-
-    @GetMapping("/usuario/{idUsuario}/ativo/{ativo}")
-    public ResponseEntity<List<LancamentoCriptoResponseDTO>> findByIdUsuarioAndAtivo(
-            @PathVariable Integer idUsuario,
-            @PathVariable String ativo) {
-        return ResponseEntity.ok(service.findByIdUsuarioAndAtivo(idUsuario, ativo));
+    @GetMapping
+    public ResponseEntity<Page<LancamentoCriptoResponseDTO>> findAll(
+            @ModelAttribute LancamentoCriptoFilterDTO filterDTO,
+            Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(filterDTO, pageable));
     }
 
     @PostMapping

@@ -208,23 +208,39 @@ public class LancamentoCriptoControllerTest extends GoodsInvestimentosApplicatio
 
     @Nested
     @Sql(scripts = {"/scripts/clear-all.sql", "/scripts/cripto/findall/setup-comum.sql"})
-    class FindByIdUsuario {
+    class FindWithFilters {
 
         @Test
-        void sucesso() throws Exception {
-            mockMvc.perform(get("/api/lancamentos/cripto/usuario/{idUsuario}", 1)
-                    .accept(MediaType.APPLICATION_JSON))
+        void filtraPorUsuario() throws Exception {
+            mockMvc.perform(get("/api/lancamentos/cripto")
+                            .param("idUsuario", "1")
+                            .param("size", "20")
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(2)))
+                    .andExpect(jsonPath("$.content", hasSize(2)))
                     .andDo(print());
         }
 
         @Test
         void usuarioSemLancamentos() throws Exception {
-            mockMvc.perform(get("/api/lancamentos/cripto/usuario/{idUsuario}", 999)
-                    .accept(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get("/api/lancamentos/cripto")
+                            .param("idUsuario", "999")
+                            .param("size", "20")
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(0)))
+                    .andExpect(jsonPath("$.content", hasSize(0)))
+                    .andDo(print());
+        }
+
+        @Test
+        void filtraPorUsuarioEAtivo() throws Exception {
+            mockMvc.perform(get("/api/lancamentos/cripto")
+                            .param("idUsuario", "1")
+                            .param("ativo", "BTC")
+                            .param("size", "20")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content", hasSize(1)))
                     .andDo(print());
         }
     }
