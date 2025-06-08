@@ -1,12 +1,12 @@
 package br.com.goods.Goods.Investimentos.services;
 
 import br.com.goods.Goods.Investimentos.mappers.LancamentoCriptoMapper;
+import br.com.goods.Goods.Investimentos.mappers.LancamentoCriptoFilterMapper;
 import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoFilterDTO;
 import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoRequestDTO;
 import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoResponseDTO;
 import br.com.goods.Goods.Investimentos.models.entities.LancamentoCriptoEntity;
 import br.com.goods.Goods.Investimentos.repositories.LancamentoCriptoRepository;
-import br.com.goods.Goods.Investimentos.specifications.LancamentoCriptoSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,37 +21,20 @@ public class LancamentoCriptoService {
 
     private final LancamentoCriptoRepository repository;
     private final LancamentoCriptoMapper mapper;
+    private final LancamentoCriptoFilterMapper filterMapper;
 
     @Autowired
-    public LancamentoCriptoService(LancamentoCriptoRepository repository, LancamentoCriptoMapper mapper) {
+    public LancamentoCriptoService(LancamentoCriptoRepository repository,
+                                   LancamentoCriptoMapper mapper,
+                                   LancamentoCriptoFilterMapper filterMapper) {
         this.repository = repository;
         this.mapper = mapper;
+        this.filterMapper = filterMapper;
     }
 
     @Transactional(readOnly = true)
     public List<LancamentoCriptoResponseDTO> findAll(LancamentoCriptoFilterDTO filterDTO) {
-        Specification<LancamentoCriptoEntity> spec = Specification.where(null);
-
-        if (filterDTO != null) {
-            if (filterDTO.getIdUsuario() != null) {
-                spec = spec.and(LancamentoCriptoSpecifications.withIdUsuario(filterDTO.getIdUsuario()));
-            }
-            if (filterDTO.getAtivo() != null && !filterDTO.getAtivo().isEmpty()) {
-                spec = spec.and(LancamentoCriptoSpecifications.withAtivo(filterDTO.getAtivo()));
-            }
-            if (filterDTO.getStartDate() != null) {
-                spec = spec.and(LancamentoCriptoSpecifications.withTimeAfter(filterDTO.getStartDate()));
-            }
-            if (filterDTO.getEndDate() != null) {
-                spec = spec.and(LancamentoCriptoSpecifications.withTimeBefore(filterDTO.getEndDate()));
-            }
-            if (filterDTO.getOperacao() != null && !filterDTO.getOperacao().isEmpty()) {
-                spec = spec.and(LancamentoCriptoSpecifications.withOperacao(filterDTO.getOperacao()));
-            }
-            if (filterDTO.getOrigem() != null && !filterDTO.getOrigem().isEmpty()) {
-                spec = spec.and(LancamentoCriptoSpecifications.withOrigem(filterDTO.getOrigem()));
-            }
-        }
+        Specification<LancamentoCriptoEntity> spec = filterMapper.toSpecification(filterDTO);
 
         return repository.findAll(spec).stream()
                 .map(mapper::toResponseDTO)
