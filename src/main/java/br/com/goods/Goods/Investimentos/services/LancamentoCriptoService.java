@@ -1,18 +1,20 @@
 package br.com.goods.Goods.Investimentos.services;
 
 import br.com.goods.Goods.Investimentos.mappers.LancamentoCriptoMapper;
+import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoFilterDTO;
 import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoRequestDTO;
 import br.com.goods.Goods.Investimentos.models.dto.LancamentoCriptoResponseDTO;
 import br.com.goods.Goods.Investimentos.models.entities.LancamentoCriptoEntity;
 import br.com.goods.Goods.Investimentos.repositories.LancamentoCriptoRepository;
+import br.com.goods.Goods.Investimentos.specifications.LancamentoCriptoSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.jpa.domain.Specification;
 
 @Service
 public class LancamentoCriptoService {
@@ -27,10 +29,38 @@ public class LancamentoCriptoService {
     }
 
     @Transactional(readOnly = true)
-    public List<LancamentoCriptoResponseDTO> findAll() {
-        return repository.findAll().stream()
+    public List<LancamentoCriptoResponseDTO> findAll(LancamentoCriptoFilterDTO filterDTO) {
+        Specification<LancamentoCriptoEntity> spec = Specification.where(null);
+
+        if (filterDTO != null) {
+            if (filterDTO.getIdUsuario() != null) {
+                spec = spec.and(LancamentoCriptoSpecifications.withIdUsuario(filterDTO.getIdUsuario()));
+            }
+            if (filterDTO.getAtivo() != null && !filterDTO.getAtivo().isEmpty()) {
+                spec = spec.and(LancamentoCriptoSpecifications.withAtivo(filterDTO.getAtivo()));
+            }
+            if (filterDTO.getStartDate() != null) {
+                spec = spec.and(LancamentoCriptoSpecifications.withTimeAfter(filterDTO.getStartDate()));
+            }
+            if (filterDTO.getEndDate() != null) {
+                spec = spec.and(LancamentoCriptoSpecifications.withTimeBefore(filterDTO.getEndDate()));
+            }
+            if (filterDTO.getOperacao() != null && !filterDTO.getOperacao().isEmpty()) {
+                spec = spec.and(LancamentoCriptoSpecifications.withOperacao(filterDTO.getOperacao()));
+            }
+            if (filterDTO.getOrigem() != null && !filterDTO.getOrigem().isEmpty()) {
+                spec = spec.and(LancamentoCriptoSpecifications.withOrigem(filterDTO.getOrigem()));
+            }
+        }
+
+        return repository.findAll(spec).stream()
                 .map(mapper::toResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<LancamentoCriptoResponseDTO> findAll() {
+        return findAll(null);
     }
 
     @Transactional(readOnly = true)
@@ -40,26 +70,6 @@ public class LancamentoCriptoService {
         return mapper.toResponseDTO(entity);
     }
 
-    @Transactional(readOnly = true)
-    public List<LancamentoCriptoResponseDTO> findByIdUsuario(Integer idUsuario) {
-        return repository.findByIdUsuario(idUsuario).stream()
-                .map(mapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<LancamentoCriptoResponseDTO> findByIdUsuarioAndTimeBetween(Integer idUsuario, ZonedDateTime startDate, ZonedDateTime endDate) {
-        return repository.findByIdUsuarioAndTimeBetween(idUsuario, startDate, endDate).stream()
-                .map(mapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<LancamentoCriptoResponseDTO> findByIdUsuarioAndAtivo(Integer idUsuario, String ativo) {
-        return repository.findByIdUsuarioAndAtivo(idUsuario, ativo).stream()
-                .map(mapper::toResponseDTO)
-                .collect(Collectors.toList());
-    }
 
     @Transactional
     public LancamentoCriptoResponseDTO create(LancamentoCriptoRequestDTO requestDTO) {
