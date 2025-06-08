@@ -12,8 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 @Service
@@ -33,17 +34,17 @@ public class LancamentoCriptoService {
     }
 
     @Transactional(readOnly = true)
-    public List<LancamentoCriptoResponseDTO> findAll(LancamentoCriptoFilterDTO filterDTO) {
+    public Page<LancamentoCriptoResponseDTO> findAll(LancamentoCriptoFilterDTO filterDTO,
+                                                     Pageable pageable) {
         Specification<LancamentoCriptoEntity> spec = filterMapper.toSpecification(filterDTO);
 
-        return repository.findAll(spec).stream()
-                .map(mapper::toResponseDTO)
-                .collect(Collectors.toList());
+        return repository.findAll(spec, pageable)
+                .map(mapper::toResponseDTO);
     }
 
     @Transactional(readOnly = true)
-    public List<LancamentoCriptoResponseDTO> findAll() {
-        return findAll(null);
+    public Page<LancamentoCriptoResponseDTO> findAll(Pageable pageable) {
+        return findAll(null, pageable);
     }
 
     @Transactional(readOnly = true)

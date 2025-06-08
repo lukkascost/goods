@@ -11,7 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/lancamentos/cripto")
@@ -34,8 +35,10 @@ public class LancamentoCriptoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LancamentoCriptoResponseDTO>> findAll(@ModelAttribute LancamentoCriptoFilterDTO filterDTO) {
-        return ResponseEntity.ok(service.findAll(filterDTO));
+    public ResponseEntity<Page<LancamentoCriptoResponseDTO>> findAll(
+            @ModelAttribute LancamentoCriptoFilterDTO filterDTO,
+            Pageable pageable) {
+        return ResponseEntity.ok(service.findAll(filterDTO, pageable));
     }
 
     @PostMapping

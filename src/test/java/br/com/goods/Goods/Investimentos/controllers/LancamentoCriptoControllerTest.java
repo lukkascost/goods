@@ -214,9 +214,10 @@ public class LancamentoCriptoControllerTest extends GoodsInvestimentosApplicatio
         void filtraPorUsuario() throws Exception {
             mockMvc.perform(get("/api/lancamentos/cripto")
                             .param("idUsuario", "1")
+                            .param("size", "20")
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(2)))
+                    .andExpect(jsonPath("$.content", hasSize(2)))
                     .andDo(print());
         }
 
@@ -224,9 +225,10 @@ public class LancamentoCriptoControllerTest extends GoodsInvestimentosApplicatio
         void usuarioSemLancamentos() throws Exception {
             mockMvc.perform(get("/api/lancamentos/cripto")
                             .param("idUsuario", "999")
+                            .param("size", "20")
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(0)))
+                    .andExpect(jsonPath("$.content", hasSize(0)))
                     .andDo(print());
         }
 
@@ -235,9 +237,10 @@ public class LancamentoCriptoControllerTest extends GoodsInvestimentosApplicatio
             mockMvc.perform(get("/api/lancamentos/cripto")
                             .param("idUsuario", "1")
                             .param("ativo", "BTC")
+                            .param("size", "20")
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)))
+                    .andExpect(jsonPath("$.content", hasSize(1)))
                     .andDo(print());
         }
     }
