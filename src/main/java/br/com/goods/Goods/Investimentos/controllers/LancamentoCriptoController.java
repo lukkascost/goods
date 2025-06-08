@@ -34,7 +34,7 @@ public class LancamentoCriptoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LancamentoCriptoResponseDTO>> findAll(LancamentoCriptoFilterDTO filterDTO) {
+    public ResponseEntity<List<LancamentoCriptoResponseDTO>> findAll(@ModelAttribute LancamentoCriptoFilterDTO filterDTO) {
         return ResponseEntity.ok(service.findAll(filterDTO));
     }
 

@@ -5,6 +5,7 @@ import br.com.goods.Goods.Investimentos.models.entities.LancamentoCriptoEntity;
 import br.com.goods.Goods.Investimentos.specifications.LancamentoCriptoSpecifications;
 import org.mapstruct.Mapper;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.StringUtils;
 
 @Mapper(componentModel = "spring")
 public interface LancamentoCriptoFilterMapper {
@@ -15,7 +16,7 @@ public interface LancamentoCriptoFilterMapper {
             if (filterDTO.getIdUsuario() != null) {
                 spec = spec.and(LancamentoCriptoSpecifications.withIdUsuario(filterDTO.getIdUsuario()));
             }
-            if (filterDTO.getAtivo() != null && !filterDTO.getAtivo().isEmpty()) {
+            if (StringUtils.hasText(filterDTO.getAtivo())) {
                 spec = spec.and(LancamentoCriptoSpecifications.withAtivo(filterDTO.getAtivo()));
             }
             if (filterDTO.getStartDate() != null) {
@@ -24,10 +25,10 @@ public interface LancamentoCriptoFilterMapper {
             if (filterDTO.getEndDate() != null) {
                 spec = spec.and(LancamentoCriptoSpecifications.withTimeBefore(filterDTO.getEndDate()));
             }
-            if (filterDTO.getOperacao() != null && !filterDTO.getOperacao().isEmpty()) {
+            if (StringUtils.hasText(filterDTO.getOperacao())) {
                 spec = spec.and(LancamentoCriptoSpecifications.withOperacao(filterDTO.getOperacao()));
             }
-            if (filterDTO.getOrigem() != null && !filterDTO.getOrigem().isEmpty()) {
+            if (StringUtils.hasText(filterDTO.getOrigem())) {
                 spec = spec.and(LancamentoCriptoSpecifications.withOrigem(filterDTO.getOrigem()));
             }
         }

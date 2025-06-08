@@ -5,7 +5,10 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.ZonedDateTime;
 
-public class LancamentoCriptoSpecifications {
+public final class LancamentoCriptoSpecifications {
+
+    private LancamentoCriptoSpecifications() {
+    }
 
     public static Specification<LancamentoCriptoEntity> withIdUsuario(Integer idUsuario) {
         return (root, query, cb) -> idUsuario == null ? null : cb.equal(root.get("idUsuario"), idUsuario);
