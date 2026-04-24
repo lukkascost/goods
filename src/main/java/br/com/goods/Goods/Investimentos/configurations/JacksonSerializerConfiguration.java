@@ -2,6 +2,7 @@ package br.com.goods.Goods.Investimentos.configurations;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.jackson.JsonComponentModule;
 import org.springframework.cloud.openfeign.support.PageJacksonModule;
 import org.springframework.cloud.openfeign.support.SortJacksonModule;
@@ -12,6 +13,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import java.text.SimpleDateFormat;
 
 @Configuration
+@Log4j2
 public class JacksonSerializerConfiguration {
 
     @Bean
@@ -21,6 +23,7 @@ public class JacksonSerializerConfiguration {
         builder.modules(new PageJacksonModule(),new SortJacksonModule(), new JavaTimeModule(), new JsonComponentModule());
         builder.dateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"));
         builder.failOnUnknownProperties(false);
+        log.info("passsou por aqui");
         return builder;
     }
 }
